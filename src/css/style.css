@@ -1,0 +1,274 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #27282a;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+}
+input, textarea {
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    background-color: inherit;
+    border: inherit;
+}
+input:focus, textarea:focus {
+    -webkit-appearance: none;
+    outline: none;
+}
+.logo {
+    font-size: 30px;
+    background: #ff385d;
+    font-family: "Open Sans";
+    font-weight: 100;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    text-align: center;
+}
+.login-form {
+    width: 80%;
+    margin: 80px auto;
+    font-family: "Open Sans";
+    font-weight: 100;
+}
+
+.login-form h1 {
+    margin-top: 30px;
+    font-weight: 100;
+}
+
+.login-form input[type='password'] {
+    background: rgba(0,0,0,0.4);
+    padding: 10px 10px;
+    width: 300px;
+}
+
+.login-form button {
+    height: 42px;
+    -webkit-appearance: none;
+    background: #ff385d;
+    font-family: "Open Sans";
+    font-weight: 100;
+    border: none;
+    padding: 0px 20px;
+    color: white;
+    top: -2px;
+    position: relative;
+    left: -5px;
+}
+
+.login-form button:focus {
+    outline: none;
+}
+
+.login-form small {
+    margin-top: 50px;
+    display: block;
+    font-size: 10px;
+    margin-bottom: 10px;
+
+}
+
+.menu {
+    float: left;
+    display: inline-block;
+    width: 70px;
+    height: 100vh;
+    background: #2c2c31;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+.menu ul li a {
+    width: 70px;
+    height: 70px;
+    text-align: center;
+    line-height: 70px;
+    cursor: pointer;
+    color: white;
+    display: block;
+}
+.menu ul li.active {
+    background: rgba(0,0,0,0.3);
+}
+
+.menu ul li:hover {
+    background: rgba(0,0,0,0.2);
+}
+.menu ul li.logo {
+    font-size: 30px;
+    background: #ff385d;
+    font-family: "Open Sans";
+    font-weight: 100;
+}
+.menu .about-link {
+    position: absolute;
+    bottom: 70px;
+}
+.menu .logout-link {
+    position: absolute;
+    bottom: 0px;
+}
+
+.content {
+    padding-left: 10px;
+    float: left;
+    display: inline-block;
+    width: calc(100% - 80px);
+    text-align: left;
+    overflow: auto;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 14px;
+}
+.terminal {
+    height: calc(100vh - 22px);
+    position: relative;
+    overflow: auto;
+    padding-bottom: 20px;
+}
+.terminal .commands {
+    padding: 0;
+}
+.terminal .command-sign {
+    flex-grow:1;
+    padding-right: 8px;
+}
+.terminal #command {
+    flex-grow:2;
+    width: 100%;
+}
+.terminal .line {
+    width: calc(100% - 10px);
+    display: block;
+}
+.terminal .user {
+    color: #ff525e;
+}
+.terminal .current-line {
+    display: flex;
+}
+
+.content .about {
+    width: 90%;
+    margin: 0 auto;
+    font-family: "Open Sans";
+    font-weight: 100;
+}
+
+.content .parameters {
+    width: 90%;
+    margin: 0 auto;
+    font-family: "Open Sans";
+    font-weight: 100;
+}
+
+.content .phpinfo {
+    width: 90%;
+    margin: 0 auto;
+    font-family: "Open Sans";
+    font-weight: 100;
+}
+
+.page-label {
+    padding-top: 40px;
+    margin-bottom: 30px;
+    font-size: 30px;
+    font-weight: 100;
+    color: white;
+}
+
+.about-me {
+    margin-top: 30px;
+}
+
+.about-me span {
+    display: block;
+}
+
+.about-me .fa {
+    color: white;
+    font-size: 25px;
+    margin-right: 10px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.about-me hr {
+    border-color: rgba(0,0,0,0.1);
+}
+
+.privacy {
+    padding: 10px 0;
+}
+
+.privacy p {
+    font-size: 12px;
+}
+
+.privacy p:nth-child(2) {
+    margin-top: 40px;
+}
+
+.privacy button {
+    margin-top: 10px;
+    height: 42px;
+    -webkit-appearance: none;
+    background: #ff385d;
+    font-family: "Open Sans";
+    font-weight: 100;
+    border: none;
+    padding: 0px 20px;
+    color: white;
+    cursor: pointer;
+}
+
+.parameters .col {
+    width: 33%;
+    float: left;
+}
+
+.parameters .box {
+    margin-bottom: 20px;
+}
+
+.parameters .box label {
+    font-size: 10px;
+    font-weight: bold;
+    display: block;
+}
+
+.parameters .box span {
+
+}
+
+
+/*** PHP INFO **/
+
+.phpinfo {
+    height: 100vh;
+    color: white;
+    font-family: "Open Sans";
+}
+
+.phpinfo pre {margin: 0; font-family: monospace;}
+.phpinfo a {color: white; }
+.phpinfo a:link {color: #009; text-decoration: none; background-color: #fff;}
+.phpinfo a:hover {text-decoration: underline;}
+.phpinfo table {border-collapse: collapse; border: 0; width: 100%;}
+.phpinfo .center {text-align: center;}
+.phpinfo .center table {margin: 1em auto; text-align: left;}
+.phpinfo .center th {text-align: center !important;}
+.phpinfo td, th {border: 1px solid #666; font-size: 75%; vertical-align: baseline; padding: 4px 5px;}
+.phpinfo h1:not(.page-label) {color: white; font-size: 150%;}
+.phpinfo h2 {color: white; font-size: 125%;}
+.phpinfo .p {text-align: left;}
+.phpinfo .e {background-color: #303133; width: 300px; font-weight: bold;}
+.phpinfo .h {background-color: #303133; font-weight: bold;}
+.phpinfo .v {background-color: #5c5d5f; max-width: 300px; overflow-x: auto; word-wrap: break-word;}
+.phpinfo .v i {color: #999;}
+.phpinfo img {float: right; border: 0;}
+.phpinfo hr { display:  none}
