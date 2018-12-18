@@ -1,8 +1,7 @@
 <?php
 
     $password = "terro123";
-    $version = "1.0.0 (beta)";
-
+    $version = "1.0 (beta)";
 
     chdir("src");
 
@@ -10,6 +9,7 @@
 
     $wrappercode = "<?php /** TERRO GENERATED CODE ".$date." */ ?>\n";
     $wrappercode .= "<?php define('VERSION', '".$version."'); ?>\n";
+    $wrappercode .= "<?php define('PASSWORD', '".$password."'); ?>\n";
 
     foreach (scandir("classes/") as $classToLoad) {
         if($classToLoad != "." && $classToLoad != "..") {
@@ -18,7 +18,7 @@
         }
     }
 
-    $wrappercode .= '<?php $terro = new Terro("'.$password.'"); ?>';
+    $wrappercode .= '<?php $terro = new Terro(PASSWORD); ?>';
 
     $wrappercode .= "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"
     \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">

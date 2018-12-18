@@ -1,5 +1,6 @@
-<?php /** TERRO GENERATED CODE 17.12.2018_23:45:27 */ ?>
-<?php define('VERSION', '1.0.0 (beta)'); ?>
+<?php /** TERRO GENERATED CODE 18.12.2018_00:21:12 */ ?>
+<?php define('VERSION', '1.0 (beta)'); ?>
+<?php define('PASSWORD', 'terro123'); ?>
 <?php
 
 class Server {
@@ -194,7 +195,7 @@ class Terro {
 
         return implode('\', \'', $single_quote_cancelled_commands);
     }
-}?><?php $terro = new Terro("terro123"); ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+}?><?php $terro = new Terro(PASSWORD); ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
