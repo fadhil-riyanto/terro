@@ -126,12 +126,12 @@ class Terro {
         $single_quote_cancelled_commands = array();
         if ( ! empty( $_SESSION['commands'] ) ) {
             foreach ($_SESSION['commands'] as $command) {
-                $cancelled_command = str_replace('\\', '\\\\', $command);
-                $cancelled_command = str_replace('\'', '\\\'', $command);
+                $cancelled_command = str_replace("\\", "\\\\", $command);
+                $cancelled_command = str_replace("\"", "\\\"", $command);
                 $single_quote_cancelled_commands[] = $cancelled_command;
             }
         }
 
-        return implode('\', \'', $single_quote_cancelled_commands);
+        return implode("\", \"", $single_quote_cancelled_commands);
     }
 }
