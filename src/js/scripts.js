@@ -48,8 +48,6 @@ $("document").ready(function() {
         $("a[href='"+hash+"']").click();
     }, 200);
 
-
-
     $(".menu li:not(.logo)").click(function() {
         $(".content").hide();
         $(".menu li").removeClass("active");
