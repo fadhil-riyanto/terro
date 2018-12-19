@@ -1,4 +1,4 @@
-<?php /** TERRO GENERATED CODE 18.12.2018_00:41:59 */ ?>
+<?php /** TERRO GENERATED CODE 19.12.2018_14:41:15 */ ?>
 <?php define('VERSION', '1.0 (beta)'); ?>
 <?php define('PASSWORD', 'terro123'); ?>
 <?php

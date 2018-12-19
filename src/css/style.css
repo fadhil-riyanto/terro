@@ -22,7 +22,7 @@ input:focus, textarea:focus {
 }
 .logo {
     font-size: 30px;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
     width: 70px;
@@ -51,7 +51,7 @@ input:focus, textarea:focus {
 .login-form button {
     height: 42px;
     -webkit-appearance: none;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
     border: none;
@@ -100,7 +100,7 @@ input:focus, textarea:focus {
 }
 .menu ul li.logo {
     font-size: 30px;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
 }
@@ -146,7 +146,7 @@ input:focus, textarea:focus {
     display: block;
 }
 .terminal .user {
-    color: #ff525e;
+    color: #e0003b;
 }
 .terminal .current-line {
     display: flex;
@@ -217,7 +217,7 @@ input:focus, textarea:focus {
     margin-top: 10px;
     height: 42px;
     -webkit-appearance: none;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
     border: none;
