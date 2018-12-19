@@ -1,4 +1,4 @@
-<?php /** TERRO GENERATED CODE 19.12.2018_21:59:18 */ ?>
+<?php /** TERRO GENERATED CODE 19.12.2018_22:06:09 */ ?>
 <?php define('VERSION', '1.0 (beta)'); ?>
 <?php define('PASSWORD', 'terro123'); ?>
 <?php
@@ -184,13 +184,13 @@ class Terro {
         $single_quote_cancelled_commands = array();
         if ( ! empty( $_SESSION['commands'] ) ) {
             foreach ($_SESSION['commands'] as $command) {
-                $cancelled_command = str_replace('\\', '\\\\', $command);
-                $cancelled_command = str_replace('\'', '\\\'', $command);
+                $cancelled_command = str_replace("\\", "\\\\", $command);
+                $cancelled_command = str_replace("\"", "\\\"", $command);
                 $single_quote_cancelled_commands[] = $cancelled_command;
             }
         }
 
-        return implode('\', \'', $single_quote_cancelled_commands);
+        return implode("\", \"", $single_quote_cancelled_commands);
     }
 }?><?php $terro = new Terro(PASSWORD); ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

@@ -22,7 +22,7 @@
 
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
-    var previous_commands = ['', '<?php echo $terro->getPreviousCommands(); ?>', ''];
+    var previous_commands = ["", "<?php echo $terro->getPreviousCommands(); ?>", ""];
     <?php echo include("js/scripts.js"); ?>
 </script>
 </body>
