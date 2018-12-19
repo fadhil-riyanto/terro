@@ -27,4 +27,7 @@
             </span>
         </form>
     </div>
+    <div class="sysbar">
+        Current directory: <?= $terro->getCurrentDirectory(); ?>
+    </div>
 </div>

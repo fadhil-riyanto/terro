@@ -45,6 +45,22 @@ class Terro {
         }
     }
 
+    public function getVersion() {
+        return VERSION;
+    }
+
+    public function isLoggedIn() {
+        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true;
+    }
+
+    public function getLoginMessage() {
+        return $this->loginMessage;
+    }
+
+    public function getCurrentDirectory() {
+        return $_SESSION['directory'];
+    }
+
     private function commandRouting($command) {
         chdir($_SESSION['directory']);
 
@@ -61,18 +77,6 @@ class Terro {
         chdir($this->orginalDirectory);
     }
 
-    public function getVersion() {
-        return VERSION;
-    }
-
-    public function isLoggedIn() {
-        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true;
-    }
-
-    public function getLoginMessage() {
-        return $this->loginMessage;
-    }
-
     private function execute($command) {
         $response = array();
 
@@ -81,25 +85,18 @@ class Terro {
             $response = array('Error');
         } else {
             if(strpos($command, 'cd') !== false) {
-                $_SESSION['directory'] = str_replace("cd ", "", $command);
+                chdir(str_replace("cd ", "", $command));
+                $_SESSION['directory'] = getcwd();
             }
         }
 
-        array_push($_SESSION['persist_commands'], FALSE);
         array_push($_SESSION['commands'], $command);
         array_push($_SESSION['command_responses'], $response);
     }
 
     private function clear() {
-        if (isset($_SESSION['logged_in'])) {
-            $logged_in = TRUE;
-        } else {
-            $logged_in = FALSE;
-        }
-        session_unset();
-        if ($logged_in) {
-            $_SESSION['logged_in'] = TRUE;
-        }
+        $_SESSION['commands'] = array();
+        $_SESSION['command_responses'] = array();
     }
 
     private function login() {
