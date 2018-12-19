@@ -7,8 +7,10 @@ function command_keyed_down(event) {
     var key_code = event.keyCode;
     if (key_code == 38) {
         fill_in_previous_command();
+        return false;
     } else if (key_code == 40) {
         fill_in_next_command();
+        return false;
     } else if (key_code == 13) {
         if (event.shiftKey) {
             document.getElementById('commands').submit();
@@ -24,7 +26,8 @@ function fill_in_previous_command() {
         current_command_index = 0;
         return;
     }
-    document.getElementById('command').value = previous_commands[current_command_index];
+
+    $("#command").val(previous_commands[current_command_index]);
 }
 
 function fill_in_next_command() {
@@ -33,7 +36,8 @@ function fill_in_next_command() {
         current_command_index = previous_commands.length - 1;
         return;
     }
-    document.getElementById('command').value = previous_commands[current_command_index];
+
+    $("#command").val(previous_commands[current_command_index]);
 }
 
 $("document").ready(function() {
