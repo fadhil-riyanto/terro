@@ -61,6 +61,10 @@ class Terro {
         return $_SESSION['directory'];
     }
 
+    public function getCommandsCount() {
+        return count($_SESSION['commands']);
+    }
+
     private function commandRouting($command) {
         chdir($_SESSION['directory']);
 
@@ -85,8 +89,14 @@ class Terro {
             $response = array('Error');
         } else {
             if(strpos($command, 'cd') !== false) {
-                chdir(str_replace("cd ", "", $command));
-                $_SESSION['directory'] = getcwd();
+                if(strpos($command, '~') !== false) {
+                    chdir(__DIR__);
+                    $_SESSION['directory'] = __DIR__;
+                    $response = array('TERRO: Changed dir to original base path');
+                } else {
+                    chdir(str_replace("cd ", "", $command));
+                    $_SESSION['directory'] = getcwd();
+                }
             }
         }
 
