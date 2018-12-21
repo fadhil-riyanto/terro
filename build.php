@@ -1,7 +1,7 @@
 <?php
 
     $password = "terro123";
-    $version = "1.0 (beta)";
+    $version = "1.1 (beta)";
 
     chdir("src");
 
@@ -10,6 +10,7 @@
     $wrappercode = "<?php /** TERRO GENERATED CODE ".$date." */ ?>\n";
     $wrappercode .= "<?php define('VERSION', '".$version."'); ?>\n";
     $wrappercode .= "<?php define('PASSWORD', '".$password."'); ?>\n";
+    $wrappercode .= "<?php session_start(); ?>\n";
 
     foreach (scandir("classes/") as $classToLoad) {
         if($classToLoad != "." && $classToLoad != "..") {
@@ -17,8 +18,6 @@
             $wrappercode .= "?>";
         }
     }
-
-    $wrappercode .= '<?php $terro = new Terro(PASSWORD); ?>';
 
     $wrappercode .= "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"
     \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
@@ -31,6 +30,9 @@
 
     $wrappercode .= file_get_contents("css/style.css");
     $wrappercode .= '</style></head><body>';
+
+    $wrappercode .= '<?php $terro = new TerroManager(PASSWORD); ?>';
+
     $wrappercode .= '<?php if (!$terro->isLoggedIn()) { ?>';
         $wrappercode .= file_get_contents('views/login.php');
     $wrappercode .= '<?php } else { ?>';

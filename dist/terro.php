@@ -1,7 +1,71 @@
-<?php /** TERRO GENERATED CODE 19.12.2018_22:06:09 */ ?>
-<?php define('VERSION', '1.0 (beta)'); ?>
+<?php /** TERRO GENERATED CODE 21.12.2018_08:41:40 */ ?>
+<?php define('VERSION', '1.1 (beta)'); ?>
 <?php define('PASSWORD', 'terro123'); ?>
+<?php session_start(); ?>
 <?php
+
+class Ajax extends AjaxControl {
+
+    public function __construct($data) {
+        parent::__construct($data);
+    }
+
+    public function getMemory($parameters = null) {
+        $response = array();
+
+        exec("free" . ' 2>&1', $response, $error_code);
+        if ($error_code > 0 AND $response == array()) {
+            $response = array('TERRO: Error on executing command');
+        }
+
+        return $response;
+    }
+
+    public function getDiskUsage($parameters = null) {
+        $response = array();
+
+        exec("df" . ' 2>&1', $response, $error_code);
+        if ($error_code > 0 AND $response == array()) {
+            $response = array('TERRO: Error on executing command');
+        }
+
+        $response = str_replace(" -", "-", $response);
+
+        $func = function($value) { return preg_split("/\s{1,}/",$value ); };
+        return array_map($func, $response);
+    }
+
+    public function getUsers($parameters = null) {
+        $response = array();
+
+        exec("cat /etc/passwd" . ' 2>&1', $response, $error_code);
+        if ($error_code > 0 AND $response == array()) {
+            $response = array('TERRO: Error on executing command');
+        }
+
+        return $response;
+    }
+}?><?php
+
+class AjaxControl {
+
+    private $response;
+
+    public function __construct($data) {
+        // TODO: detect if action exists
+        $functionName = $data['action'];
+
+        try {
+            $this->response = $this->$functionName($data);
+        } catch(Exception $e) {
+            $this->response = array("FAIL", $e);
+        }
+    }
+
+    public function getResponse() {
+        return json_encode($this->response);
+    }
+}?><?php
 
 class Server {
 
@@ -58,133 +122,54 @@ class Server {
 
 }?><?php
 
-class Terro {
+class Storage {
 
-    private $servicePassword;
-    private $loginMessage = "";
-    private $orginalDirectory = "";
-
-    public function __construct($servicePassword) {
-        session_start();
-
-        $this->servicePassword = $servicePassword;
-
+    public function __construct() {
         if ( ! isset($_SESSION['persist_commands']) OR ! isset($_SESSION['commands'])) {
-            $_SESSION['persist_commands'] = array();
-            $_SESSION['commands'] = array();
-            $_SESSION['command_responses'] = array();
-            $_SESSION['directory'] = getcwd();
-        }
-
-        $this->orginalDirectory = getcwd();
-
-        if (isset($_POST['command'])) {
-            if (!isset($_SESSION['logged_in'])) {
-                if ($_POST['command'] == $this->servicePassword) {
-                    $this->login();
-                } else {
-                    $this->loginMessage = "Invalid password";
-                }
-            } else {
-                if($this->isLoggedIn() && $_POST['command'] != $this->servicePassword) {
-                    $this->commandRouting($_POST['command']);
-                }
-            }
-        }
-
-        if($this->isLoggedIn()) {
-            if (isset($_GET['logout'])) {
-                $this->logout();
-            }
-
-            if (isset($_GET['remove'])) {
-                $this->remove();
-            }
+            $this->createStorageSpace();
         }
     }
 
-    public function getVersion() {
-        return VERSION;
+    public function createStorageSpace() {
+        $_SESSION['persist_commands'] = array();
+        $_SESSION['commands'] = array();
+        $_SESSION['command_responses'] = array();
+        $_SESSION['directory'] = getcwd();
+    }
+
+    public function clearStorage() {
+        $_SESSION['commands'] = array();
+        $_SESSION['command_responses'] = array();
+    }
+
+    public function setLoggedIn($status) {
+        $_SESSION['logged_in'] = $status;
+
+        if(!$status) {
+            session_unset();
+        }
     }
 
     public function isLoggedIn() {
         return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true;
     }
-
-    public function getLoginMessage() {
-        return $this->loginMessage;
+    
+    public function getCommandsCount() {
+        return count($_SESSION['commands']); 
     }
-
+    
     public function getCurrentDirectory() {
         return $_SESSION['directory'];
     }
-
-    private function commandRouting($command) {
-        chdir($_SESSION['directory']);
-
-        if ($command != '') {
-            if ($command == 'logout') {
-                $this->logout();
-            } elseif ($command == 'clear') {
-                $this->clear();
-            } else {
-                $this->execute($command);
-            }
-        }
-
-        chdir($this->orginalDirectory);
-    }
-
-    private function execute($command) {
-        $response = array();
-
-        exec($command . ' 2>&1', $response, $error_code);
-        if ($error_code > 0 AND $response == array()) {
-            $response = array('Error');
-        } else {
-            if(strpos($command, 'cd') !== false) {
-                chdir(str_replace("cd ", "", $command));
-                $_SESSION['directory'] = getcwd();
-            }
-        }
-
-        array_push($_SESSION['commands'], $command);
-        array_push($_SESSION['command_responses'], $response);
-    }
-
-    private function clear() {
-        $_SESSION['commands'] = array();
-        $_SESSION['command_responses'] = array();
-    }
-
-    private function login() {
-        $_SESSION['logged_in'] = TRUE;
-    }
-
-    private function logout() {
-        $this->loginMessage = "Bye bye!";
-        session_unset();
-    }
-
-    private function remove() {
-        if(VERSION == 'dev') {
-            die("This is dev version. :D :D");
-        } else {
-            unlink(__FILE__);
-
-            if(!file_exists(__FILE__)) {
-                die("Terro was removed. Please refresh page :)");
-            } else {
-                die("Upss.. Terro was not removed.. ");
-            }
-        }
+    
+    public function setCurrentDirectory($directory) {
+        $_SESSION['directory'] = $directory;
     }
 
     public function getPreviousCommands() {
         $single_quote_cancelled_commands = array();
         if ( ! empty( $_SESSION['commands'] ) ) {
             foreach ($_SESSION['commands'] as $command) {
-                $cancelled_command = str_replace("\\", "\\\\", $command);
                 $cancelled_command = str_replace("\"", "\\\"", $command);
                 $single_quote_cancelled_commands[] = $cancelled_command;
             }
@@ -192,7 +177,149 @@ class Terro {
 
         return implode("\", \"", $single_quote_cancelled_commands);
     }
-}?><?php $terro = new Terro(PASSWORD); ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+
+    public function addToStorage($command, $response) {
+        array_push($_SESSION['commands'], $command);
+        array_push($_SESSION['command_responses'], $response);
+    }
+}?><?php
+
+class Terro {
+
+    public $servicePassword;
+    public $loginMessage = "";
+    public $originalDirectory = "";
+
+    public $storage = null;
+    
+    public function __construct($servicePassword) {
+        $this->storage = new Storage();
+        $this->servicePassword = $servicePassword;
+        $this->originalDirectory = getcwd();
+    }
+
+    public function getVersion() {
+        return VERSION;
+    }
+
+    public function isLoggedIn() {
+         return $this->storage->isLoggedIn();
+    }
+
+    public function getLoginMessage() {
+        return $this->loginMessage;
+    }
+
+    public function getCurrentDirectory() {
+        return $this->storage->getCurrentDirectory();
+    }
+
+    public function getCommandsCount() {
+        return $this->storage->getCommandsCount();
+    }
+
+    public function clear() {
+        $this->storage->clearStorage();
+    }
+
+    public function login() {
+        $this->storage->setLoggedIn(true);
+    }
+
+    public function logout() {
+        $this->loginMessage = "Bye bye!";
+        $this->storage->setLoggedIn(false);
+    }
+
+    public function remove() {
+        if(VERSION == 'dev') {
+            throw new Exception("This is dev version. So it's not possible to remove file.");
+        } else {
+            unlink(__FILE__);
+
+            if(!file_exists(__FILE__)) {
+                throw new Exception("Terro was removed. Please refresh page :)");
+            } else {
+                throw new Exception("Upss, something wrong. Terro was not removed.. ");
+            }
+        }
+    }
+
+    public function getPreviousCommands() {
+        return $this->storage->getPreviousCommands();
+    }
+}?><?php
+
+class TerroManager extends Terro {
+
+    public function __construct($servicePassword) {
+        parent::__construct($servicePassword);
+
+        if (!$this->isLoggedIn()) {
+            if ($_POST['command'] == $this->servicePassword) {
+                $this->login();
+            } else {
+                $this->loginMessage = "Invalid password";
+            }
+        } else {
+
+            if (isset($_GET['logout']) || (isset($_POST['command']) && $_POST['command'] == 'logout')) {
+                $this->logout();
+            }
+
+            if (isset($_POST['command']) && $_POST['command'] == 'clear') {
+                $this->clear();
+            }
+
+            if (isset($_GET['remove'])) {
+                $this->remove();
+            }
+
+            if (isset($_GET['ajax'])) {
+                $this->executeAjax($_GET);
+            }
+
+            if (isset($_POST['command']) && $_POST['command'] != $this->servicePassword && $_POST['command'] != '' && $_POST['command'] != 'clear' && $_POST['command'] != 'logout') {
+                $this->executeCommand($_POST['command']);
+            }
+        }
+    }
+    
+    private function executeAjax($parameters) {
+        $ajax = new Ajax($parameters);
+        die($ajax->getResponse());
+    }
+
+    private function executeCommand($command) {
+        chdir($this->storage->getCurrentDirectory());
+
+        $response = array();
+
+        exec($command . ' 2>&1', $response, $error_code);
+        if ($error_code > 0 AND $response == array()) {
+            $response = array('TERRO: Error on executing command');
+        } else {
+            if(strpos($command, 'cd ') !== false) {
+                if(strpos($command, '~') !== false) {
+                    chdir(__DIR__);
+                    $this->storage->setCurrentDirectory(__DIR__);
+                    $response = array('TERRO: Changed dir to original base path');
+                } else {
+                    $directory = str_replace("cd ", "", $command);
+                    if(trim($directory) != "") {
+                        if(file_exists($directory)) {
+                            chdir($directory);
+                            $this->storage->setCurrentDirectory(getcwd());
+                        }
+                    }
+                }
+            }
+        }
+
+        chdir($this->originalDirectory);
+        $this->storage->addToStorage($command, $response);
+    }
+}?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
@@ -485,7 +612,7 @@ input:focus, textarea:focus {
 .phpinfo .v i {color: #999;}
 .phpinfo img {float: right; border: 0;}
 .phpinfo hr { display:  none}
-</style></head><body><?php if (!$terro->isLoggedIn()) { ?><form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="commands login-form" id="commands">
+</style></head><body><?php $terro = new TerroManager(PASSWORD); ?><?php if (!$terro->isLoggedIn()) { ?><form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post" class="commands login-form" id="commands">
     <div class="logo">tr</div>
     <h1>Terro | One file PHP terminal emulator</h1>
     <p>Terro is terminal emulator - used to fast and quick server administration</p>
@@ -534,7 +661,7 @@ input:focus, textarea:focus {
         </form>
     </div>
     <div class="sysbar">
-        Current directory: <?= $terro->getCurrentDirectory(); ?>
+        Executed commands: <?= $terro->getCommandsCount(); ?> Current directory: <?= $terro->getCurrentDirectory(); ?>
     </div>
 </div><div class="content" data-content="parameters" style="display: none">
     <div class="parameters">
