@@ -28,6 +28,6 @@
         </form>
     </div>
     <div class="sysbar">
-        Current directory: <?= $terro->getCurrentDirectory(); ?>
+        Executed commands: <?= $terro->getCommandsCount(); ?> Current directory: <?= $terro->getCurrentDirectory(); ?>
     </div>
 </div>

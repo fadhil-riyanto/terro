@@ -2,47 +2,16 @@
 
 class Terro {
 
-    private $servicePassword;
-    private $loginMessage = "";
-    private $orginalDirectory = "";
+    public $servicePassword;
+    public $loginMessage = "";
+    public $originalDirectory = "";
 
+    public $storage = null;
+    
     public function __construct($servicePassword) {
-        session_start();
-
+        $this->storage = new Storage();
         $this->servicePassword = $servicePassword;
-
-        if ( ! isset($_SESSION['persist_commands']) OR ! isset($_SESSION['commands'])) {
-            $_SESSION['persist_commands'] = array();
-            $_SESSION['commands'] = array();
-            $_SESSION['command_responses'] = array();
-            $_SESSION['directory'] = getcwd();
-        }
-
-        $this->orginalDirectory = getcwd();
-
-        if (isset($_POST['command'])) {
-            if (!isset($_SESSION['logged_in'])) {
-                if ($_POST['command'] == $this->servicePassword) {
-                    $this->login();
-                } else {
-                    $this->loginMessage = "Invalid password";
-                }
-            } else {
-                if($this->isLoggedIn() && $_POST['command'] != $this->servicePassword) {
-                    $this->commandRouting($_POST['command']);
-                }
-            }
-        }
-
-        if($this->isLoggedIn()) {
-            if (isset($_GET['logout'])) {
-                $this->logout();
-            }
-
-            if (isset($_GET['remove'])) {
-                $this->remove();
-            }
-        }
+        $this->originalDirectory = getcwd();
     }
 
     public function getVersion() {
@@ -50,7 +19,7 @@ class Terro {
     }
 
     public function isLoggedIn() {
-        return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true;
+         return $this->storage->isLoggedIn();
     }
 
     public function getLoginMessage() {
@@ -58,80 +27,41 @@ class Terro {
     }
 
     public function getCurrentDirectory() {
-        return $_SESSION['directory'];
+        return $this->storage->getCurrentDirectory();
     }
 
-    private function commandRouting($command) {
-        chdir($_SESSION['directory']);
-
-        if ($command != '') {
-            if ($command == 'logout') {
-                $this->logout();
-            } elseif ($command == 'clear') {
-                $this->clear();
-            } else {
-                $this->execute($command);
-            }
-        }
-
-        chdir($this->orginalDirectory);
+    public function getCommandsCount() {
+        return $this->storage->getCommandsCount();
     }
 
-    private function execute($command) {
-        $response = array();
-
-        exec($command . ' 2>&1', $response, $error_code);
-        if ($error_code > 0 AND $response == array()) {
-            $response = array('Error');
-        } else {
-            if(strpos($command, 'cd') !== false) {
-                chdir(str_replace("cd ", "", $command));
-                $_SESSION['directory'] = getcwd();
-            }
-        }
-
-        array_push($_SESSION['commands'], $command);
-        array_push($_SESSION['command_responses'], $response);
+    public function clear() {
+        $this->storage->clearStorage();
     }
 
-    private function clear() {
-        $_SESSION['commands'] = array();
-        $_SESSION['command_responses'] = array();
+    public function login() {
+        $this->storage->setLoggedIn(true);
     }
 
-    private function login() {
-        $_SESSION['logged_in'] = TRUE;
-    }
-
-    private function logout() {
+    public function logout() {
         $this->loginMessage = "Bye bye!";
-        session_unset();
+        $this->storage->setLoggedIn(false);
     }
 
-    private function remove() {
+    public function remove() {
         if(VERSION == 'dev') {
-            die("This is dev version. :D :D");
+            throw new Exception("This is dev version. So it's not possible to remove file.");
         } else {
             unlink(__FILE__);
 
             if(!file_exists(__FILE__)) {
-                die("Terro was removed. Please refresh page :)");
+                throw new Exception("Terro was removed. Please refresh page :)");
             } else {
-                die("Upss.. Terro was not removed.. ");
+                throw new Exception("Upss, something wrong. Terro was not removed.. ");
             }
         }
     }
 
     public function getPreviousCommands() {
-        $single_quote_cancelled_commands = array();
-        if ( ! empty( $_SESSION['commands'] ) ) {
-            foreach ($_SESSION['commands'] as $command) {
-                $cancelled_command = str_replace("\\", "\\\\", $command);
-                $cancelled_command = str_replace("\"", "\\\"", $command);
-                $single_quote_cancelled_commands[] = $cancelled_command;
-            }
-        }
-
-        return implode("\", \"", $single_quote_cancelled_commands);
+        return $this->storage->getPreviousCommands();
     }
 }
